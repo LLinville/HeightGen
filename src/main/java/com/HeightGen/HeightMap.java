@@ -22,13 +22,25 @@ public class HeightMap {
         xSize=heights[0].length;
     }
 
+    public float[][] getHeights(){
+        return heights;
+    }
+
+    public void setHeights(float[][] heights){
+        if(this.heights.length != heights.length || this.heights[0].length != heights[0].length) {
+            throw new IndexOutOfBoundsException("Size of given heights does not match previous");
+        } else {
+            this.heights = heights;
+        }
+    }
+
     public void setColorLookup(String colorLookupFilePath) throws IOException{
 
         colorLookup = ImageIO.read(new File(colorLookupFilePath));
 
     }
 
-    public boolean saveAsImage(String filepath){
+    public boolean saveAsImage(String filepath)throws IOException{
         if(heights == null){
             return false;
         }
@@ -39,12 +51,8 @@ public class HeightMap {
                 bi.setRGB(x,y,colorLookup.getRGB(h,0));
             }
         }
-        try {
-            ImageIO.write(bi, "PNG", new File(filepath));
-        } catch (IOException e){
-            e.printStackTrace();
-            return false;
-        }
+        ImageIO.write(bi, "PNG", new File(filepath));
+
         return true;
 
     }
