@@ -8,6 +8,7 @@ import java.io.IOException;
 public class HeightMap {
     int xSize, ySize;
     float heights[][];
+    BufferedImage colorLookup;
 
     public HeightMap(int width, int height){
         this.heights = new float[width][height];
@@ -21,6 +22,12 @@ public class HeightMap {
         xSize=heights[0].length;
     }
 
+    public void setColorLookup(String colorLookupFilePath) throws IOException{
+
+        colorLookup = ImageIO.read(new File(colorLookupFilePath));
+
+    }
+
     public boolean saveAsImage(String filepath){
         if(heights == null){
             return false;
@@ -29,7 +36,7 @@ public class HeightMap {
         for(int x=0; x<heights.length; x++){
             for(int y=0; y<heights[0].length; y++){
                 int h=(int)heights[x][y];
-                bi.setRGB(x,y,(h<<16|h<<8|h)+50);
+                bi.setRGB(x,y,colorLookup.getRGB(h,0));
             }
         }
         try {
