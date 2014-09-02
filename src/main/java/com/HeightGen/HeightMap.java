@@ -7,26 +7,26 @@ import java.io.IOException;
 
 public class HeightMap {
     int xSize, ySize;
-    float heights[][];
+    double heights[][];
     BufferedImage colorLookup;
 
     public HeightMap(int width, int height){
-        this.heights = new float[width][height];
+        this.heights = new double[width][height];
         xSize=width;
         ySize=height;
     }
 
-    public HeightMap(float[][] heights){
+    public HeightMap(double[][] heights){
         this.heights = heights;
         ySize=heights.length;
         xSize=heights[0].length;
     }
 
-    public float[][] getHeights(){
+    public double[][] getHeights(){
         return heights;
     }
 
-    public void setHeights(float[][] heights){
+    public void setHeights(double[][] heights){
         if(this.heights.length != heights.length || this.heights[0].length != heights[0].length) {
             throw new IndexOutOfBoundsException("Size of given heights does not match previous");
         } else {
@@ -46,11 +46,15 @@ public class HeightMap {
         }
         BufferedImage bi = new BufferedImage(xSize, ySize, BufferedImage.TYPE_INT_ARGB);
         for(int x=0; x<heights.length; x++){
+            System.out.println("Writing to image " + 100*x/heights.length + "% complete");
             for(int y=0; y<heights[0].length; y++){
                 int h=(int)heights[x][y];
+                if(h>255) h=255;
+                if(h<0) h=0;
                 bi.setRGB(x,y,colorLookup.getRGB(h,0));
             }
         }
+        System.out.println("Saving image...");
         ImageIO.write(bi, "PNG", new File(filepath));
 
         return true;

@@ -1,18 +1,21 @@
 import com.HeightGen.Filters.AddFiftyClipped;
-import com.HeightGen.Generators.Flat;
+import com.HeightGen.Generators.FlatGenerator;
+import com.HeightGen.Generators.SinWaveGenerator;
 import com.HeightGen.HeightMap;
 
 import java.io.IOException;
 
 public class Main{
     public static void main(String[] args){
-        Flat flat = new Flat();
+        FlatGenerator flatGenerator = new FlatGenerator();
+        SinWaveGenerator sinWaveGenerator = new SinWaveGenerator(4,4);
         AddFiftyClipped filter = new AddFiftyClipped();
         try {
-            HeightMap heightMap = flat.generate(256, 256);
+            flatGenerator.setHeight(100);
+            HeightMap heightMap = sinWaveGenerator.generate(4096, 4096);
             heightMap.setColorLookup("C:\\Users\\Eracoy\\Documents\\GitHub\\HeightGen\\src\\main\\resources\\Lookup.png");
             filter.applyTo(heightMap);
-            filter.applyTo(heightMap);
+            //filter.applyTo(heightMap);
             heightMap.saveAsImage("output.png");
         } catch (IOException e) {
             e.printStackTrace();
