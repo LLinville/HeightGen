@@ -9,57 +9,83 @@ import java.util.Random;
  */
 public class PerlinGenerator {
 
-    double[][] randomHeights;
-    int randomHeightsXSize, randomHeightsYSize;
+    int numOctaves;
+    double[] octaveWeights;
 
-    public PerlinGenerator(int randomHeightsXSize, int randomHeightsYSize){
-        this.randomHeightsXSize = randomHeightsXSize;
-        this.randomHeightsYSize = randomHeightsYSize;
-    }
-
-    public void initializeRandomHeights(int xSize, int ySize){
-        randomHeights = new double[xSize][ySize];
-        Random rand = new Random();
-        for(int x = 0; x<xSize; x++){
-            for(int y=0; y<ySize; y++){
-                randomHeights[x][y] = rand.nextDouble()%255;
-            }
-        }
+    public PerlinGenerator(int numOctaves, double[] octaveWeights){
+        this.numOctaves = numOctaves;
+        this.octaveWeights = octaveWeights;
     }
 
     private double interpolate(double lower, double upper, double x){
-        return (upper-lower)*(x * x * x * (x * (x * 6.0 - 15.0) + 10.0) + lower);
+        //take absolute value of upper-lower for a cool effect
+        return (upper-lower)*(x * x * x * (x * (x * 6.0 - 15.0) + 10.0)) + lower;
     }
 
-    private double noise(double x, double y){
-        double hInterLow = interpolate(randomHeights[(int)x][(int)y], randomHeights[(int)Math.ceil(x)%randomHeightsXSize][(int)Math.ceil(y)%randomHeightsYSize], x%1);
-        double hInterHigh = interpolate(randomHeights[(int)x][(int)y], randomHeights[(int)Math.ceil(x)%randomHeightsXSize][(int)Math.ceil(y)%randomHeightsYSize], x%1);
-        return interpolate(hInterLow, hInterHigh, y%1);
-    }
+    private double[][] enlarge(double[][] small, int factor){
+        int smallXSize = small.length;
+        int smallYSize = small[0].length;
+        int largeXSize = smallXSize*factor;
+        int largeYSize = smallYSize*factor;
 
-    public double octavedNoise(double x, double y, int octaves, double roughness, double scale) {
-        double noiseSum = 0;
-        double layerFrequency = scale;
-        double layerWeight = 1;
-        double weightSum = 0;
-        initializeRandomHeights(1024, 1024);
+        double[][] large = new double[largeXSize][largeYSize];
 
-        for (int octave = 0; octave < octaves; octave++) {
-            noiseSum += noise(x * layerFrequency, y * layerFrequency) * layerWeight;
-            layerFrequency *= 2;
-            weightSum += layerWeight;
-            layerWeight *= roughness;
+        for(int y=0; y<largeYSize; y+=factor) {
+            for (int x = 0; x < largeXSize; x++) {
+                if (x % factor == 0) { //we are on a point provided by the small grid
+                    large[x][y] = small[x/factor][y/factor];
+                } else{
+                    //System.out.printf("x %d, y %d\n", x, y);
+                    //System.out.printf("Interpolating from %d,%d to %d,%d\n\n",x/factor,y/factor,(x/factor+1)%(smallXSize),y/factor);
+                    large[x][y] = interpolate(
+                            small[x/factor][y/factor],
+                            small[(x/factor+1)%(smallXSize)][y/factor],
+                            (double)(x%factor)/factor);
+                }
+            }
         }
-        return noiseSum / weightSum;
+        for(int x=0; x<largeXSize; x++){
+            for(int y=0; y<largeYSize; y++){
+                if(y%factor == 0){
+                    continue;
+                }
+                //System.out.printf("x %d, y %d\n", x, y);
+
+                large[x][y] = interpolate(
+                        large[x][y-y%factor],
+                        large[x][(y-y%factor+factor)%largeYSize],
+                        (double)(y%factor)/factor);
+            }
+        }
+        return large;
     }
 
+    public double[][] getOctaveNoise(int size, int enlargementFactor){
+        double[][] heights = new double[size][size];
+        Random rand = new Random();
+        for(int x=0; x<heights.length; x++){
+            System.out.println("initializing random grid " + 100*x/heights.length + "% complete");
+            for(int y=0; y<heights[0].length; y++){
+                heights[x][y] = rand.nextDouble()*255;
+            }
+        }
+        heights = enlarge(heights, enlargementFactor);
+        return heights;
+    }
     public HeightMap generate(int xSize, int ySize){
         double[][] heights = new double[xSize][ySize];
-        for(int x=0; x<heights.length; x++){
-            System.out.println("Generating " + 100*x/heights.length + "% complete");
-            for(int y=0; y<heights[0].length; y++){
-                heights[x][y] = octavedNoise(x, y, 1, 0.5, 2);
+        double[][][] octaves = new double[numOctaves][xSize][ySize];
 
+
+        for(int octave = 0; octave<numOctaves; octave++) {
+            octaves[octave]=getOctaveNoise((int) Math.pow(2,octave+1), (int) Math.pow(2,numOctaves-octave));
+        }
+
+        for(int x=0; x<xSize; x++){
+            for(int y=0; y<ySize; y++){
+                for(int octave = 0; octave<numOctaves; octave++) {
+                    heights[x][y] += octaves[octave][x][y]/Math.pow(2, octave+1);
+                }
             }
         }
         HeightMap result = new HeightMap(heights);

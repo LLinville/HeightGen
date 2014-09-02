@@ -10,12 +10,13 @@ public class Main{
     public static void main(String[] args){
         FlatGenerator flatGenerator = new FlatGenerator();
         SinWaveGenerator sinWaveGenerator = new SinWaveGenerator(4,4);
-        PerlinGenerator perlinGenerator = new PerlinGenerator(1024, 1024);
+        double[] octaveWeights = {0.25, 0.25, 0.25, 0.25};
+        PerlinGenerator perlinGenerator = new PerlinGenerator(9, octaveWeights);
         AddFiftyClipped filter = new AddFiftyClipped();
         try {
             flatGenerator.setHeight(100);
-            HeightMap heightMap = perlinGenerator.generate(128,128);
-            heightMap.setColorLookup("src\\main\\resources\\Lookup.png");
+            HeightMap heightMap = perlinGenerator.generate(512,512);
+            heightMap.setColorLookup("src\\main\\resources\\LookupLand.png");
             //filter.applyTo(heightMap);
             //filter.applyTo(heightMap);
             heightMap.saveAsImage("output.png");
