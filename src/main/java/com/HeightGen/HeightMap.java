@@ -49,9 +49,9 @@ public class HeightMap {
             System.out.println("Writing to image " + 100*x/heights.length + "% complete");
             for(int y=0; y<heights[0].length; y++){
                 int h=(int)heights[x][y];
-                if(h>255) h=255;
-                if(h<0) h=0;
-                bi.setRGB(x,y,colorLookup.getRGB(h,0));
+                //if(h>255) h=255;
+                //if(h<0) h=0;
+                bi.setRGB(x,y,colorLookup.getRGB(h%255,0));
             }
         }
         System.out.println("Saving image...");

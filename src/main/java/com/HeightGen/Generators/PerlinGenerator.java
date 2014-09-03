@@ -64,7 +64,7 @@ public class PerlinGenerator {
         double[][] heights = new double[size][size];
         Random rand = new Random();
         for(int x=0; x<heights.length; x++){
-            System.out.println("initializing random grid " + 100*x/heights.length + "% complete");
+            if(x%10==0) System.out.println("initializing random grid " + 100*x/heights.length + "% complete");
             for(int y=0; y<heights[0].length; y++){
                 heights[x][y] = rand.nextDouble()*255;
             }
@@ -74,20 +74,18 @@ public class PerlinGenerator {
     }
     public HeightMap generate(int xSize, int ySize){
         double[][] heights = new double[xSize][ySize];
-        double[][][] octaves = new double[numOctaves][xSize][ySize];
+        double[][] currentOctave;
 
-
-        for(int octave = 0; octave<numOctaves; octave++) {
-            octaves[octave]=getOctaveNoise((int) Math.pow(2,octave+1), (int) Math.pow(2,numOctaves-octave));
-        }
-
-        for(int x=0; x<xSize; x++){
-            for(int y=0; y<ySize; y++){
-                for(int octave = 0; octave<numOctaves; octave++) {
-                    heights[x][y] += octaves[octave][x][y]/Math.pow(2, octave+1);
+        int startingOctave = 5;
+        for(int octave = startingOctave; octave<numOctaves; octave++) {
+            currentOctave = getOctaveNoise((int) Math.pow(2,octave), (int)(xSize/Math.pow(2,octave)));
+            for(int x=0; x<xSize; x++){
+                for(int y=0; y<ySize; y++){
+                    heights[x][y] += currentOctave[x][y]/Math.pow(2, octave-startingOctave+1);
                 }
             }
         }
+
         HeightMap result = new HeightMap(heights);
         return result;
     }

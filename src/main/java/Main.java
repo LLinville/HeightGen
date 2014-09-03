@@ -11,11 +11,11 @@ public class Main{
         FlatGenerator flatGenerator = new FlatGenerator();
         SinWaveGenerator sinWaveGenerator = new SinWaveGenerator(4,4);
         double[] octaveWeights = {0.25, 0.25, 0.25, 0.25};
-        PerlinGenerator perlinGenerator = new PerlinGenerator(9, octaveWeights);
+        PerlinGenerator perlinGenerator = new PerlinGenerator(10, octaveWeights);
         AddFiftyClipped filter = new AddFiftyClipped();
         try {
             flatGenerator.setHeight(100);
-            HeightMap heightMap = perlinGenerator.generate(512,512);
+            HeightMap heightMap = perlinGenerator.generate(4096, 4096);
             heightMap.setColorLookup("src\\main\\resources\\LookupLand.png");
             //filter.applyTo(heightMap);
             //filter.applyTo(heightMap);
