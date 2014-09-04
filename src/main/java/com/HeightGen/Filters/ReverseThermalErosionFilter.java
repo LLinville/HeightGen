@@ -23,7 +23,7 @@ public class ReverseThermalErosionFilter implements Filter {
 
     @Override
     public HeightMap applyTo(HeightMap... heightMaps){
-        double[][] finalHeights = heightMaps[0].getHeights();
+        double[][] finalHeights = heightMaps[0].getHeights().clone();
         double[][] newHeights = heightMaps[0].getHeights();
         int xSize = finalHeights.length;
         int ySize = finalHeights[0].length;
