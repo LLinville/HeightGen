@@ -10,11 +10,11 @@ import java.util.Random;
 public class PerlinGenerator {
 
     int numOctaves;
-    double[] octaveWeights;
+    int startingOctave;
 
-    public PerlinGenerator(int numOctaves, double[] octaveWeights){
+    public PerlinGenerator(int numOctaves, int startingOctave){
         this.numOctaves = numOctaves;
-        this.octaveWeights = octaveWeights;
+        this.startingOctave = startingOctave;
     }
 
     private double interpolate(double lower, double upper, double x){
@@ -76,7 +76,7 @@ public class PerlinGenerator {
         double[][] heights = new double[xSize][ySize];
         double[][] currentOctave;
 
-        int startingOctave = 5;
+
         for(int octave = startingOctave; octave<numOctaves; octave++) {
             currentOctave = getOctaveNoise((int) Math.pow(2,octave), (int)(xSize/Math.pow(2,octave)));
             for(int x=0; x<xSize; x++){

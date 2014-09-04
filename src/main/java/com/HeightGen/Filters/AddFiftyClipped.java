@@ -8,7 +8,8 @@ import com.HeightGen.HeightMap;
  */
 public class AddFiftyClipped implements Filter {
     @Override
-    public void applyTo(HeightMap heightMap){
+    public HeightMap applyTo(HeightMap... heightMaps){
+        HeightMap heightMap = heightMaps[0];
         double[][] heights = heightMap.getHeights();
         for(int x=0; x<heights.length; x++){
             System.out.println("Filter: AddFiftyClipped" + 100*x/heights.length + "% complete");
@@ -19,5 +20,6 @@ public class AddFiftyClipped implements Filter {
                 }
             }
         }
+        return new HeightMap(heights);
     }
 }
