@@ -71,8 +71,8 @@ public class ThermalErosionFilter implements Filter {
     //returns the largest difference between the height of the center and four other heights
     public double maxDifference(double center, double h1, double h2, double h3, double h4){
         return max(
-                max(abs(center-h1), abs(center-h2)),
-                max(abs(center-h3), abs(center-h4))
+                max(center-h1, center-h2),
+                max(center-h3, center-h4)
         );
     }
 

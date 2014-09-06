@@ -51,7 +51,7 @@ public class HeightMap {
                 int h=(int)heights[x][y];
                 //if(h>255) h=255;
                 //if(h<0) h=0;
-                bi.setRGB(x,y,colorLookup.getRGB(h%255,0));
+                bi.setRGB(x,y,colorLookup.getRGB((h+255)%255,0));
             }
         }
         System.out.println("Saving image...");
